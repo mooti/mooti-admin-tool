@@ -1,0 +1,15 @@
+{
+    "config": {
+        "domain": "dev.local"
+    },
+    "repositories": [
+        {
+            "name": "mooti.service.account",
+            "url": "git@github.com:mooti/mooti-service-account.git"
+        },
+        {
+            "name": "mooti.database.account",
+            "url": "git@github.com:mooti/mooti-database-account.git"
+        }
+    ]
+}
