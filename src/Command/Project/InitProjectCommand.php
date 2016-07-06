@@ -39,12 +39,14 @@ class InitProjectCommand extends Command
         $platformConfig->init();
         $platformConfig->setPlatformVersion($platformVersion);
         $platformConfig->save();
-        
+
+        $fileSystem->createDirectory($curDir.'/.vagrant');
         $fileSystem->createDirectory($curDir.'/repositories');
         $fileSystem->createDirectory($curDir.'/apache');
         $fileSystem->createDirectory($curDir.'/apache/sites-available');
 
-        $ignoreFiles = '/repositories/'.PHP_EOL;
+        $ignoreFiles = '/.vagrant/'.PHP_EOL;
+        $ignoreFiles .= '/repositories/'.PHP_EOL;
         $ignoreFiles .= '/apache/'.PHP_EOL;
         $ignoreFiles .= '/platform/'.PHP_EOL;
 
