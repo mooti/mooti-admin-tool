@@ -8,6 +8,7 @@ use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Mooti\Framework\Framework;
 use Mooti\Platform\Config\PlatformConfig;
 use Mooti\Framework\Util\FileSystem;
+use Mooti\Framework\Exception\FileSystemException;
 
 class InitProjectCommand extends Command
 {
@@ -16,7 +17,7 @@ class InitProjectCommand extends Command
     protected function configure()
     {
         $this->setName('project:init');
-        $this->setDescription('Update repositories. This will read your platform json and update your local repos');
+        $this->setDescription('Initilaise the project');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -28,12 +29,17 @@ class InitProjectCommand extends Command
             return;
         }
 
-        $platformConfig = $this->createNew(PlatformConfig::class);
-        $platformConfig->init();
-        $platformConfig->save();
-
         $fileSystem = $this->createNew(FileSystem::class);
         $curDir = $fileSystem->getCurrentWorkingDirectory();
+
+        $versionFile = $curDir.'/platform/version.txt';
+        $platformVersion = trim($fileSystem->fileGetContents($versionFile));
+
+        $platformConfig = $this->createNew(PlatformConfig::class);
+        $platformConfig->init();
+        $platformConfig->setPlatformVersion($platformVersion);
+        $platformConfig->save();
+        
         $fileSystem->createDirectory($curDir.'/repositories');
         $fileSystem->createDirectory($curDir.'/apache');
         $fileSystem->createDirectory($curDir.'/apache/sites-available');

@@ -13,6 +13,19 @@ class PlatformConfig extends AbstractConfig
     const FILENAME = 'platform.json';
 
     protected $rules = [
+        'platform' => [
+            'required' => true,
+            'type'     => 'object',
+            'properties' => [
+                'version' => [
+                    'required' => 'true',
+                    'type'     => 'string',
+                    'constraints' => [
+                        'length' => [5,null]
+                    ]
+                ]
+            ]
+        ],
         'config' => [
             'required' => true,
             'type'     => 'object',
@@ -52,11 +65,22 @@ class PlatformConfig extends AbstractConfig
     public function init()
     {
         $this->configData = [
+            'platform' => [
+                'version' => ''
+            ],
             'config' => [ 
                 'domain'    => 'dev.local'
             ],
             'repositories' => []
         ];
+    }
+
+    public function setPlatformVersion($version)
+    {
+        if (isset($this->configData) == false) {
+            throw new DataValidationException('Platform config has not been initialised');
+        }
+        $this->configData['platform']['version'] =  $version;
     }
 
     public function addRepository($name, $url)

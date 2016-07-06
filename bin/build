@@ -18,6 +18,7 @@ cd mooti-platform-admin/
 VERSION=`git describe --abbrev=0 --tags`
 git checkout $VERSION
 echo $VERSION > version.txt
-rm -fr .git bin build tests .vagrant
+composer install
+rm -fr .git bin/build build tests .vagrant
 cd ..
 zip -r mooti-platform-admin-$VERSION.zip mooti-platform-admin/
