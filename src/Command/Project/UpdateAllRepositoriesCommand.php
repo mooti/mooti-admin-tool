@@ -73,16 +73,16 @@ class UpdateAllRepositoriesCommand extends Command
 
                 $templatePath = $templateDir.'/apache/'.$serverType.'.tpl';
                 $templateContents = $fileSystem->fileGetContents($templatePath);
-                $severName = $mootiConfigArray['name'].'.'.$config['config']['domain'];
+                $serverName = $mootiConfigArray['name'].'.'.$config['config']['domain'];
                 $webRoot = $mootiConfigArray['server']['web_root'];
                 $repositoryWebRoot = $repository['name'] . (empty($webRoot) == false?'/'.$webRoot:'');
                 $data = [
-                    '{{server_name}}'         => $severName,
+                    '{{server_name}}'         => $serverName,
                     '{{repository_web_root}}' => $repositoryWebRoot,
                     '{{index_file}}'          => $mootiConfigArray['server']['index_file']
                 ];
                 $apacheConfigContents = str_replace(array_keys($data), array_values($data), $templateContents);
-                $apacheConfigPath = $curDir.'/apache/sites-available/'.$severName.'.conf';
+                $apacheConfigPath = $curDir.'/apache/sites-available/'.$serverName.'.conf';
                 
                 try {
                     $oldApacheConfigContents = $fileSystem->fileGetContents($apacheConfigPath);
@@ -92,6 +92,15 @@ class UpdateAllRepositoriesCommand extends Command
 
                 if ($apacheConfigContents != $oldApacheConfigContents) {
                     $fileSystem->filePutContents($apacheConfigPath, $apacheConfigContents);
+
+                    $apacheSitesAvailablePath = '/etc/apache2/sites-available/'.$serverName.'.conf';
+                    if (!$fileSystem->fileExists($apacheSitesAvailablePath)) {
+                        $command = 'sudo ln -s '.$apacheConfigPath.' '.$apacheSitesAvailablePath;
+                        $this->runCommand($command, $output);
+                        $command = 'sudo a2ensite '.$serverName;
+                        $this->runCommand($command, $output);
+                    }
+                    
                     $output->writeln('Apache config has changed. Restarting...');
                     $command = ' sudo service apache2 restart';
                     $this->runCommand($command, $output);

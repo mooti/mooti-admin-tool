@@ -38,6 +38,12 @@ class InitProjectCommand extends Command
         $fileSystem->createDirectory($curDir.'/apache');
         $fileSystem->createDirectory($curDir.'/apache/sites-available');
 
+        $ignoreFiles = '/repositories/'.PHP_EOL;
+        $ignoreFiles .= '/apache/'.PHP_EOL;
+        $ignoreFiles .= '/platform/'.PHP_EOL;
+
+        $fileSystem->filePutContents($curDir.'/.gitignore', $ignoreFiles);
+
         $output->writeln('done');
     }
 }
